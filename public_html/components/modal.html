@@ -1,0 +1,162 @@
+
+<style>
+    .component_modal .modal-content .modal-body{
+        padding-bottom: 20px ;
+        padding-top: 10px;
+    }
+    .component_modal .modal-body > div{
+        max-width: 100%;
+    }
+    .component_modal .modal-title{
+        text-transform: uppercase;
+        margin-left: 15px;
+        vertical-align: middle;
+        font-size: 15px;
+        font-weight: bold;
+    }
+    .component_modal .modal-title.center{
+        pointer-events: none;
+        margin: 0;
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+    }
+    .component_modal .back{
+        cursor: pointer;
+    }
+
+    .component_modal .loading{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -100%);
+    }
+</style>
+
+<template>
+    <div v-bind:id="'modal_' + id" class="component_modal modal fade">
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header bg-inverse">
+                    <i class='fa fa-arrow-left back' style="font-size: 18px; vertical-align: middle;" data-dismiss="modal"></i>
+                    <span class="modal-title" v-bind:class='!subtitle ? "center" : ""'>{{title}}</span>
+                    <span style='float:right' v-html='subtitle'></span>
+                </div>
+
+                <div class="modal-body">
+                    <div v-if='!loaded' class='loading'><i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i></div>
+                    <page ref="component"></page>                    
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</template>
+
+<script>
+
+    //DEVOLVER SIEMPRE UNA NUEVA INSTANCIA
+    define(function () {
+        //COMO CLASE
+        return function () {
+            return {
+                template: template,
+                data: function () {
+                    return {
+                        title: "",
+                        subtitle: "",
+                        page: "",
+                        id: "",
+                        loaded: false
+                    };
+                },
+                watch: {
+                    page: function () {
+                        var id = this.page.split("/").pop().split(".").shift();
+                        id = id.replace(/ /g, '');
+
+                        //NO AFECTAR LA CLASE DEL MODAL PARA PODER AÑADIR CLASES DE MANERA EXTERNA
+                        this.id = id;
+
+                        //ESPERAR ANIMACION DEL MODAL Y MOSTRAR EL LOADING..
+                        var self = this;
+                        setTimeout(function () {
+                            self.loadPage();
+                        }, 300);
+
+                    }
+                },
+                created: function () {
+                    var self = this;
+                    //INICAR COMPONENT
+                    Vue.component("page", function (resolve) {
+                        self.compCallback = resolve;
+                    });
+                },
+                mounted: function () {
+                    var self = this;
+
+                    this.$on("show", function () {
+                        self.show();
+                    });
+                    this.$on("hide", function () {
+                        self.hide();
+                    });
+
+                    $(this.$el)
+                            .modal("show")
+                            .on('hidden.bs.modal', function (e) {
+                                $(self.$el).remove();
+                            });
+                },
+                methods: {
+                    loadPage: function () {
+                        var self = this;
+                        console.log("this.page: " + this.page);
+
+                        //RESOLVER COMPONENTE
+                        require(["vue!" + this.page], function (component) {
+                            //console.log("componentClass", componentClass);
+                            if (typeof component === "function") {
+                                var component = new component();
+                            }
+
+                            //DATA INJECTION
+                            var data = component.data
+                            if (typeof data === "function") {
+                                data = data();
+                            }
+                            for (var key in self.data) {
+                                data[key] = self.data[key];
+                            }
+                            component.data = function () {
+                                return data;
+                            };
+
+                            //LOAD
+                            self.compCallback(component);
+
+                            self.loaded = true;
+                            setTimeout(function () {
+                                self.$emit("load");
+                            }, 1);
+                        });
+                    },
+                    show: function () {
+                        console.log("show");
+                        $(this.$el).modal("show");
+                    },
+                    hide: function () {
+                        console.log("hide");
+                        $(this.$el).modal("hide");
+                    }
+                }
+            };
+        };
+    });
+
+</script>

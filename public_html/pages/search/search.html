@@ -1,0 +1,97 @@
+
+<style>
+    #ranking .user {
+        position: relative;
+    }
+
+    #ranking .user > * {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    #ranking .user .picture {
+        width: 60px;
+        height: 60px;
+        border-radius: 99px;
+    }
+
+    #ranking .user .num {
+        background-color: red;
+        color: white;
+        font-size: 24px;
+        width: 60px;
+        text-align: center;
+    }
+
+    #ranking .user .name {
+        margin-left: 15px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    #ranking .user .fa {
+        font-size: 24px;
+        position: absolute;
+        right: 15px;
+        line-height: 60px;
+    }
+</style>
+
+<template>
+    <div id='ranking' class='container'>
+
+        <p style="color:grey">
+            Sugerencias:
+        </p>
+
+        <div v-for='(user, index) in users' class='user'>
+            <div class='picture' v-bind:style="'background-image:url(' + user.profile_picture + ')'"></div>
+            <div class='name'>
+                <div>
+                    {{user.username}}
+                </div>
+                <div style="color:grey">
+                    {{user.full_name}}
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <p style="color:grey">
+            Recientes:
+        </p>
+
+    </div>
+</template>
+
+<script>
+
+    define({
+        template: template,
+        data: {
+            users: {}
+        },
+        mounted: function () {
+            var self = this;
+
+            var access_token = localStorage.getItem("access_token");
+            if (!access_token) {
+                login();
+                return;
+            }
+
+            //update server
+            var access_token = localStorage.getItem("access_token");
+            if (access_token) {
+                $.post(window.server + "UserController@update", {
+                    access_token: access_token
+                }, function (users) {
+                    self.users = users;
+                });
+            }
+
+        }
+    });
+
+</script>

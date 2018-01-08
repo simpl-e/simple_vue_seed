@@ -1,0 +1,59 @@
+
+<template>
+    <div id='messages'>
+        
+        <h4>Messages:</h4>
+
+        follows:
+        <div class='inline'>{{follows}}</div>
+        <div v-for='user in follows'>
+            {{user}}
+            <br>
+        </div>
+        
+        <br><br>
+
+        followedBy: 
+        <div class='inline'>{{followedBy}}</div>
+        <div v-for='user in followedBy'>
+            <div class='picture' v-bind:style="'background-image:url(' + user.profile_picture + ')'" 
+                 style='display: inline-block; width: 30px; height: 30px;'></div>
+            {{user.full_name}}
+            <br>
+        </div>
+
+    </div>
+</template>
+
+<script>
+
+    define({
+        template: template,
+        data: {
+            follows: {},
+            followedBy: {}
+        },
+        mounted: function () {
+            var self = this;
+
+            var access_token = localStorage.getItem("access_token");
+            if (!access_token) {
+                login();
+                return;
+            }
+
+            var api = "https://api.instagram.com/v1/";
+
+            //RELATIONSHIPS
+            //follows
+            $.get(api + "users/self/follows?access_token=" + access_token, function (res) {
+                self.follows = res.data;
+            });
+            //followed by
+            $.get(api + "users/self/followed-by?access_token=" + access_token, function (res) {
+                self.followedBy = res.data;
+            });
+        }
+    });
+
+</script>

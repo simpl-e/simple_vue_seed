@@ -1,0 +1,99 @@
+
+<style>
+    #profile .picture {
+        box-shadow: 0 0 2px black;
+    }
+</style>
+
+<template>
+    <div id='profile'>
+
+        <div class='inline'>{{profile}}</div>
+
+        <div class='picture' v-if='profile.profile_picture' v-bind:style="'background-image:url(' + profile.profile_picture + ')'"></div>
+        
+        <br>
+        <p style='font-weight: bold; color: blue'>{{profile.full_name}}</p>
+
+        <p v-if='profile.bio'>{{profile.bio}}</p>
+        <p v-if='profile.website'>{{profile.website}}</p>
+
+        follows: <div class='inline'>{{follows}}</div>
+        <br>
+
+        followedBy: <div class='inline'>{{followedBy}}</div>
+        <br>
+
+        requestedBy: <div class='inline'>{{requestedBy}}</div>
+        <br>
+
+        <br>
+
+        <div class='row' style="color: blue">
+            <div class='col-4'>Visitar</div>
+            <div class='col-4'>Recomendar</div>
+            <div class='col-4'>Votar</div>
+        </div>
+
+    </div>
+</template>
+
+<script>
+
+    define({
+        template: template,
+        data: {
+            profile: {},
+            recents: {},
+            liked: {}
+            ,
+            follows: {},
+            followedBy: {},
+            requestedBy: {}
+        },
+        mounted: function () {
+            var self = this;
+
+            var access_token = localStorage.getItem("access_token");
+            if (!access_token) {
+                login();
+                return;
+            }
+
+            var api = "https://api.instagram.com/v1/";
+
+            //USERS
+            //profile
+            $.get(api + "users/self/?access_token=" + access_token, function (res) {
+                self.profile = res.data;
+            }).fail(function () {
+                login();
+            });
+
+            //last posted images
+            $.get(api + "users/self/media/recent/?access_token=" + access_token, function (res) {
+                self.recents = res.data;
+            });
+
+            $.get(api + "users/self/media/liked?access_token=" + access_token, function (res) {
+                self.liked = res.data;
+            });
+
+
+            //RELATIONSHIPS
+            //follows
+            $.get(api + "users/self/follows?access_token=" + access_token, function (res) {
+                self.follows = res.data;
+            });
+            //followed by
+            $.get(api + "users/self/followed-by?access_token=" + access_token, function (res) {
+                self.followedBy = res.data;
+            });
+            //requested by
+            $.get(api + "users/self/requested-by?access_token=" + access_token, function (res) {
+                self.requestedBy = res.data;
+            });
+        }
+    });
+
+</script>

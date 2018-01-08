@@ -1,0 +1,78 @@
+
+<style>
+    #home .col-3{
+        padding: 3px;        
+    }
+
+    #home .picture{        
+        width: auto;
+        height: 0;
+        padding-bottom: 100%;
+
+        position: relative;
+        border-radius: 15px;
+        box-shadow: 1px 1px 1px black;
+        overflow: hidden;
+    }
+
+    #home .name{
+        position: absolute;
+        bottom: 0; 
+        left: 0;
+        right: 0;
+        background: rgba(255,255,255,0.7);
+        text-shadow: 1px 1px white;
+        text-align: center;
+        font-size: 14px;
+        padding: 3px;
+    }
+</style>
+
+<template>
+    <div id='home' class='container'>
+
+        <!--{{user}}-->
+        <div class='row'>
+
+            <div v-for='user in users' class='col-3'>
+                <div class='picture' v-on:click="'user(' + user.id + ')'" v-bind:style="'background-image:url(' + user.profile_picture + ')'">
+                    <div class='name'>
+                        {{user.full_name}}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</template>
+
+<script>
+
+    define({
+        template: template,
+        data: {
+            users: {}
+        },
+        mounted: function () {
+            var self = this;
+
+            var access_token = localStorage.getItem("access_token");
+            if (!access_token) {
+                login();
+                return;
+            }
+
+            //update server
+            var access_token = localStorage.getItem("access_token");
+            if (access_token) {
+                $.post(window.server + "UserController@update", {
+                    access_token: access_token
+                }, function (users) {
+                    self.users = users;
+                });
+            }
+        }
+    });
+
+</script>
