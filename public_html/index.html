@@ -116,8 +116,9 @@
             }
 
             function login() {
-                var url = "http://localhost/topingram/public_html/index.html";
+                //var url = "http://localhost/topingram/public_html/index.html";
                 //var url = "http://localhost:8383/topingram/index.html";
+                var url = location.origin + location.pathname;
                 var scope = "basic+public_content+follower_list+comments+relationships+likes"; //ALL
                 location.href = "https://api.instagram.com/oauth/authorize/?"
                         + "client_id=045469a8bcac4dd095d95b879ffa2fba"
