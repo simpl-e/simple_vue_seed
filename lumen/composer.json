@@ -5,6 +5,9 @@
         "vlucas/phpdotenv": "~2.2"
     },
     "autoload": {
+        "classmap": [
+            "app/database/migrations"
+        ],
         "psr-4": {
             "App\\": "app/"
         },
