@@ -6,7 +6,7 @@
     },
     "autoload": {
         "classmap": [
-            "app/database/migrations"
+            "database/migrations"
         ],
         "psr-4": {
             "App\\": "app/"
