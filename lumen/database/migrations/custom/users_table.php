@@ -12,7 +12,7 @@ class CreateUsersTable extends Migration {
      * @return void
      */
     public function up() {
-        //php artisan migrate --path=/app/database/migrations/
+        // php artisan migrate --path=/app/database/migrations/
         
         if (!Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {

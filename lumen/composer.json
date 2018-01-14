@@ -7,6 +7,12 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/"
+        },
+        "classmap": [
+            "app/database/migrations"
+        ],
+        "psr-4": {
+            "Acme\\controllers\\": "app/controllers"
         }
     },
     "minimum-stability": "dev",
