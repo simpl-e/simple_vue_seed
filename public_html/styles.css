@@ -3,6 +3,10 @@ html, body {
     overflow-x: hidden;
 }
 
+#header {
+    transition: all 300ms;
+}
+
 #submenu {
     white-space: nowrap;
     background: grey;

@@ -29,6 +29,23 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js"></script>
 
+        <script>
+            //STORE ACCESS TOKEN 
+            if (location.hash.indexOf("access_token=") >= 0) {
+                var access_token = location.hash.split("access_token=").pop();
+                localStorage.setItem("access_token", access_token);
+            }
+
+            function get_access_token() {
+                var access_token = localStorage.getItem("access_token");
+                if (!access_token) {
+                    login();
+                    return;
+                }
+                return access_token;
+            }
+        </script>
+
         <script src="lib/requirejs/require.js"></script>
         <script src="app.js"></script>
 
@@ -42,10 +59,10 @@
     </head>
     <body>
 
-        <div class="bg-dark">
+        <div id="header" class="bg-dark">
             <nav class="container navbar navbar-expand-lg navbar-dark">
                 <a class="navbar-brand" href="#">Topingram</a>
-                <i class="fa fa-bars navbar-toggler" style='color:white; font-size:24px; border: none' 
+                <i class="fa fa-bars navbar-toggler" style='font-size:24px; border: none' 
                    data-toggle="collapse" data-target="#navbarColor01"></i>
 
                 <div class="collapse navbar-collapse" id="navbarColor01">
@@ -101,19 +118,13 @@
             </nav>
         </div>
 
-        <div id='content'>
+        <div id='content' class='container' style="padding: 0">
             <div></div>
         </div>
 
         <br><br><br>
 
         <script>
-
-            //STORE ACCESS TOKEN 
-            if (location.hash.indexOf("access_token=") >= 0) {
-                var access_token = location.hash.split("access_token=").pop();
-                localStorage.setItem("access_token", access_token);
-            }
 
             function login() {
                 //var url = "http://localhost/topingram/public_html/index.html";
@@ -134,13 +145,14 @@
                 });
             });
 
-            function user() {
+            function user(user) {
                 require(["vue!components/modal.html"], function (modalClass) {
                     var modal = new modalClass();
 
                     var div = $("<div>").appendTo("body")[0];
                     var vm = new Vue(modal).$mount(div);
 
+                    vm.data = {user: user};
                     vm.page = "pages/profile/profile.html";
                 });
             }

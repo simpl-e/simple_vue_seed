@@ -9,6 +9,7 @@ class UserController extends Controller {
 
     public function update(Request $request) {
         $access_token = $request->access_token;
+        $user_id = $request->user_id;
 
         $json = file_get_contents("https://api.instagram.com/v1/users/self/?access_token=$access_token");
         $data = json_decode($json);
@@ -25,6 +26,16 @@ class UserController extends Controller {
         $user->save();
 
         return User::select(["id", "username", "full_name", "profile_picture", "points"])->get();
+    }
+
+    public function search(Request $request) {
+        $access_token = $request->access_token;
+        $q = $request->q;
+
+        $json = file_get_contents("https://api.instagram.com/v1/users/search/?q=$q&access_token=$access_token");
+        $data = json_decode($json);
+
+        return $json;
     }
 
 }

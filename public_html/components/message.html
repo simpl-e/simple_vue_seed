@@ -1,0 +1,35 @@
+
+<style>
+
+</style>
+
+<template>
+    <div class="message">
+        
+        {{from_name}} <span v-if='from_name && to_name' style='color:grey'>a</span> {{to_name}}
+
+        <div>
+            <b>{{subject}}</b>
+        </div>
+
+        <hr>
+        <div>
+            {{message}}
+        </div>
+
+    </div>
+</template>
+
+<script>
+
+    define({
+        template: template,
+        data: {
+            from: "",
+            to: "",
+            subject: "",
+            message: ""
+        }
+    });
+
+</script>

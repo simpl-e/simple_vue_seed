@@ -1,21 +1,22 @@
 
 <style>
-    #ranking .user {
+    #search .user {
         position: relative;
+        margin-top: 10px;
     }
 
-    #ranking .user > * {
+    #search .user > * {
         display: inline-block;
         vertical-align: top;
     }
 
-    #ranking .user .picture {
+    #search .user .picture {
         width: 60px;
         height: 60px;
         border-radius: 99px;
     }
 
-    #ranking .user .num {
+    #search .user .num {
         background-color: red;
         color: white;
         font-size: 24px;
@@ -23,29 +24,78 @@
         text-align: center;
     }
 
-    #ranking .user .name {
+    #search .user .name {
         margin-left: 15px;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
     }
 
-    #ranking .user .fa {
+    #search .user .fa {
         font-size: 24px;
         position: absolute;
         right: 15px;
         line-height: 60px;
     }
+
+    #header #searchHeader {
+        display: none;
+    }
+    .page_search #header #searchHeader {
+        display: block;
+        padding-top: .3125rem;
+        padding-bottom: .3125rem;
+    }
+    .page_search #header #searchHeader input {
+        background: transparent;
+        border: none;
+        outline: none;
+    }
+
+    .page_search #header {        
+        background-color: white !important;
+        box-shadow: inset 0 -1px 1px -1px grey;
+    }
+    .page_search #header > * {
+        color:grey !important;
+    }
+
+    .page_search #header .navbar-brand, .page_search #header .navbar-toggler{
+        display: none;
+    }
+
 </style>
 
 <template>
-    <div id='ranking' class='container'>
+    <div id='search' class='container'>
+
+        <div v-if="find">
+                        
+            <br>
+            
+            <div v-if='find.length > 0' v-for='(user, index) in find' class='user' v-on:click='showUser(user)'>
+                <div class='picture' v-bind:style="'background-image:url(' + user.profile_picture + ')'"></div>
+                <div class='name'>
+                    <div>
+                        {{user.username}}
+                    </div>
+                    <div style="color:grey">
+                        {{user.full_name}}
+                    </div>
+                </div>
+            </div>
+            <div v-if='0 == find.length'>
+                <span style='color:grey'>No se han encontrado coincidencias</span>
+            </div>
+            
+            <hr>
+        </div>
 
         <p style="color:grey">
             Sugerencias:
         </p>
 
-        <div v-for='(user, index) in users' class='user'>
+        <div v-for='(user, index) in users' class='user' v-on:click='showUser(user)'>
             <div class='picture' v-bind:style="'background-image:url(' + user.profile_picture + ')'"></div>
             <div class='name'>
                 <div>
@@ -62,6 +112,18 @@
             Recientes:
         </p>
 
+        <div v-for='(user, index) in recent' class='user' v-on:click='showUser(user)'>
+            <div class='picture' v-bind:style="'background-image:url(' + user.profile_picture + ')'"></div>
+            <div class='name'>
+                <div>
+                    {{user.username}}
+                </div>
+                <div style="color:grey">
+                    {{user.full_name}}
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -70,27 +132,66 @@
     define({
         template: template,
         data: {
-            users: {}
+            users: {},
+            recent: {},
+            find: null
         },
         mounted: function () {
             var self = this;
 
-            var access_token = localStorage.getItem("access_token");
-            if (!access_token) {
+            var token = get_access_token();
+            if (!token) {
                 login();
                 return;
             }
 
-            //update server
-            var access_token = localStorage.getItem("access_token");
-            if (access_token) {
-                $.post(window.server + "UserController@update", {
-                    access_token: access_token
+            self.recent = JSON.parse(localStorage.getItem("recent_users"));
+
+            var api = "https://api.instagram.com/v1/";
+
+            $.get(api + "users/self/?access_token=" + token, function (res) {
+                var user_id = res.data.id;
+
+                //update server
+                $.post(window.server + "user@update", {
+                    access_token: token,
+                    user_id: user_id
                 }, function (users) {
                     self.users = users;
                 });
-            }
+            });
 
+            this.findInput();
+        },
+        methods: {
+            findInput: function () {
+                var self = this;
+
+                $("#searchHeader").remove()
+                var find = $("<form id='searchHeader' method='post'>").prependTo("#header nav");
+                var input = $("<input placeholder='Search user'>").appendTo(find);
+                input.focus();
+                $('<input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;" tabindex="-1" />').appendTo(find);
+
+                var token = get_access_token();
+                if (!token) {
+                    return;
+                }
+
+                find.submit(function (e) {
+                    var api = "https://api.instagram.com/v1/";
+
+                    $.get(api + "users/search/?q=" + input.val() + "&access_token=" + token, function (res) {
+                        self.find = res.data;
+                        localStorage.setItem("recent_users", JSON.stringify(res.data));
+                    });
+
+                    return false;
+                });
+            },
+            showUser: function(username){
+                window.user(username);
+            }
         }
     });
 

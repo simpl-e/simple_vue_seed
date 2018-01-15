@@ -16,11 +16,24 @@ class CreateUsersTable extends Migration {
 
         if (!Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {
-                $table->integer('id');
+                $table->bigInteger('id');
                 $table->string('username');
                 $table->string('full_name');
                 $table->string('profile_picture');
                 $table->integer('points');
+                $table->timestamps();
+            });
+        }
+        
+        if (!Schema::hasTable('messages')) {
+            Schema::create('messages', function (Blueprint $table) {
+                $table->increments('id');
+                $table->bigInteger('from');
+                $table->string('from_name');
+                $table->bigInteger('to');                
+                $table->string('to_name');
+                $table->string('subject');
+                $table->text('message');
                 $table->timestamps();
             });
         }

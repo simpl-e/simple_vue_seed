@@ -3,36 +3,46 @@
     #profile .picture {
         box-shadow: 0 0 2px black;
     }
+
+    #profile .options {        
+        text-align: center;
+        white-space: nowrap;
+        font-size: 15px;
+    }
+    #profile .options i {
+        margin-right: 5px;
+    }     
 </style>
 
 <template>
     <div id='profile'>
 
-        <div class='inline'>{{profile}}</div>
-
         <div class='picture' v-if='profile.profile_picture' v-bind:style="'background-image:url(' + profile.profile_picture + ')'"></div>
-        
+
         <br>
         <p style='font-weight: bold; color: blue'>{{profile.full_name}}</p>
 
+        <hr>
+
+        <span style='color:grey'>Bio:</span>
         <p v-if='profile.bio'>{{profile.bio}}</p>
-        <p v-if='profile.website'>{{profile.website}}</p>
+        <p v-if='profile.website'><a v-bind:href='profile.website'>{{profile.website}}</a></p>
 
-        follows: <div class='inline'>{{follows}}</div>
-        <br>
+        <hr>
 
-        followedBy: <div class='inline'>{{followedBy}}</div>
-        <br>
-
-        requestedBy: <div class='inline'>{{requestedBy}}</div>
-        <br>
-
-        <br>
-
-        <div class='row' style="color: blue">
-            <div class='col-4'>Visitar</div>
-            <div class='col-4'>Recomendar</div>
-            <div class='col-4'>Votar</div>
+        <div class='row options' style="color: blue">
+            <div class='col-4'>
+                <i class="fa fa-instagram"></i>
+                Visitar
+            </div>
+            <div class='col-4'>
+                <i class="fa fa-thumbs-o-up"></i>
+                Recomendar
+            </div>
+            <div class='col-4'>
+                <i class="fa fa-ticket"></i>
+                Votar
+            </div>
         </div>
 
     </div>
@@ -40,59 +50,87 @@
 
 <script>
 
-    define({
-        template: template,
-        data: {
-            profile: {},
-            recents: {},
-            liked: {}
-            ,
-            follows: {},
-            followedBy: {},
-            requestedBy: {}
-        },
-        mounted: function () {
-            var self = this;
+    define(function (VueSelect) {
+        //COMO CLASE
+        return function () {
+            return {
 
-            var access_token = localStorage.getItem("access_token");
-            if (!access_token) {
-                login();
-                return;
+                template: template,
+                data: {
+                    profile: {},
+                    recents: {},
+                    liked: {}
+                    ,
+                    follows: {},
+                    followedBy: {},
+                    requestedBy: {}
+                },
+                mounted: function () {
+                    var self = this;
+
+                    var token = get_access_token();
+                    if (!token) {
+                        return;
+                    }
+
+                    var api = "https://api.instagram.com/v1/";
+
+//                    //USERS
+//                    var userId = this.id;
+//                    if (!userId) {
+//                        userId = "self";
+//                    }
+//
+//                    //profile
+//                    $.get(api + "users/" + userId + "/?access_token=" + token, function (res) {
+//                        self.profile = res.data;
+//                    });
+//
+//                    //last posted images
+//                    $.get(api + "users/" + userId + "/media/recent/?access_token=" + token, function (res) {
+//                        self.recents = res.data;
+//                    });
+//
+//
+//
+//                    if ("self" == userId) {
+//                        $.get(api + "users/self/media/liked?access_token=" + token, function (res) {
+//                            self.liked = res.data;
+//                        });
+//
+//                        //RELATIONSHIPS
+//                        //follows
+//                        $.get(api + "users/self/follows?access_token=" + token, function (res) {
+//                            self.follows = res.data;
+//                        });
+//                        //followed by
+//                        $.get(api + "users/self/followed-by?access_token=" + token, function (res) {
+//                            self.followedBy = res.data;
+//                        });
+//                        //requested by
+//                        $.get(api + "users/self/requested-by?access_token=" + token, function (res) {
+//                            self.requestedBy = res.data;
+//                        });
+//
+//                    } else {
+//                        $.get(api + "users/" + userId + "/relationship?access_token=" + token, function (res) {
+//                            self.requestedBy = res.data;
+//                        });
+//                    }
+
+                    if (!this.user) {
+                        $.get(api + "users/self/?access_token=" + token, function (res) {
+                            self.profile = res.data;
+                        });
+                    } else {
+                        //self.profile = this.user;
+                        $.get(api + "users/search/?q=" + this.user.username + "&access_token=" + token, function (res) {
+                            self.profile = res.data[0];
+                        });
+                    }
+                }
+
             }
-
-            var api = "https://api.instagram.com/v1/";
-
-            //USERS
-            //profile
-            $.get(api + "users/self/?access_token=" + access_token, function (res) {
-                self.profile = res.data;
-            }).fail(function () {
-                login();
-            });
-
-            //last posted images
-            $.get(api + "users/self/media/recent/?access_token=" + access_token, function (res) {
-                self.recents = res.data;
-            });
-
-            $.get(api + "users/self/media/liked?access_token=" + access_token, function (res) {
-                self.liked = res.data;
-            });
-
-
-            //RELATIONSHIPS
-            //follows
-            $.get(api + "users/self/follows?access_token=" + access_token, function (res) {
-                self.follows = res.data;
-            });
-            //followed by
-            $.get(api + "users/self/followed-by?access_token=" + access_token, function (res) {
-                self.followedBy = res.data;
-            });
-            //requested by
-            $.get(api + "users/self/requested-by?access_token=" + access_token, function (res) {
-                self.requestedBy = res.data;
-            });
         }
     });
 

@@ -35,6 +35,13 @@ require.config({
         if (!hash) {
             hash = "home";
         }
+        
+        //AÑADIR CLASE 'page_'
+        //https://stackoverflow.com/questions/2644299/jquery-removeclass-wildcard
+        $("html").removeClass(function (index, className) {
+            return (className.match(/(^|\s)page_\S+/g) || []).join(' ');
+        });
+        $("html").addClass("page_" + hash);
 
         return 'pages/' + hash + '/' + hash + '.html';
     }

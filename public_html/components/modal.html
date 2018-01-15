@@ -58,7 +58,7 @@
 </template>
 
 <script>
-
+    
     //DEVOLVER SIEMPRE UNA NUEVA INSTANCIA
     define(function () {
         //COMO CLASE
@@ -116,7 +116,7 @@
                 methods: {
                     loadPage: function () {
                         var self = this;
-                        console.log("this.page: " + this.page);
+                        console.log("this.page", this.page);
 
                         //RESOLVER COMPONENTE
                         require(["vue!" + this.page], function (component) {
