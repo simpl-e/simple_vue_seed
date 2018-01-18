@@ -1,0 +1,29 @@
+
+<style>
+    .component_message {
+        margin-top: 15px;
+    }
+</style>
+
+<template>
+    <div class="component_message">
+
+        <input v-model='message.text'> 
+        <div>Hola {{message.text}}</div>
+
+    </div>
+</template>
+
+<script>
+
+    define(function () {
+        //COMO CLASE
+        return function () {
+            return {
+                template: template,
+                props: ["message"]
+            };
+        };
+    });
+
+</script>

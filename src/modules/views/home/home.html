@@ -1,0 +1,108 @@
+
+<style>
+    /* ENCAPSULA SIEMPRE LOS ESTILOS con view_ID */
+    #view_home p {
+        margin-top: 15px;
+    }
+
+    #view_home #componentes {
+        border: 1px solid grey;
+        padding: 10px;
+    }
+</style>
+
+<template>
+    <div id='view_home' class='container'>
+
+        <b>HELLO WORLD</b> (src/modules/views/home/home.html)
+        <static-component v-bind='{description}'></static-component>
+
+        <p>
+            <button class='btn btn-primary' v-on:click='modal'>modal</button>&nbsp;
+            <button class='btn btn-primary' v-on:click='modalLeft'>modal izquierda</button>&nbsp;
+            <button class='btn btn-primary'  v-on:click='modalRight'>modal derecha</button>&nbsp;
+        </p>
+
+        <p>
+            <button class='btn btn-primary' v-on:click='component'>crear componentes</button>&nbsp;
+        </p>
+
+        <div id='componentes' v-if='messages'>
+            vista home: {{messages}}
+            <div v-for='message in messages'>            
+                <message v-bind='{message}'></message>
+            </div>  
+        </div>
+
+    </div>
+</template>
+
+<script>
+    
+    //COMPONENTES PRE-DEFINIDOS
+    Vue.component('static-component', function (resolve, reject) {
+        require(["vue!src/modules/components/static.html"], function (Component) {
+            var component = new Component();
+            resolve(component);
+        });
+    });
+
+    define({
+        template: template,
+        data: {
+            description: "Este contenido está en un componente pre-definido",
+            messages: false
+        },
+        methods: {
+            modal: function () {
+                _modal(function (vm) {
+                    vm.page = "src/modules/views/example/example.html";
+                    vm.title = "bootstrap modal";
+                });
+            },
+            modalLeft: function () {
+                _modal(function (vm) {
+                    $(vm.$el).addClass("modalPage");
+
+                    vm.page = "src/modules/views/example/example.html";
+                    vm.title = "modal izquierda";
+                });
+            },
+            modalRight: function () {
+                _modal(function (vm) {
+                    $(vm.$el).addClass("modalPage");
+                    $(vm.$el).find(".modal-dialog").css("float", "right");
+
+                    vm.page = "src/modules/views/example/example.html";
+                    vm.title = "modal derecha";
+                });
+            },
+            component: function () {
+                var self = this;
+                //CARGA DINÁMICA DE COMPONENTE
+                require(["vue!src/modules/components/message.html"], function (Component) {
+                    var messageComponent = new Component();
+
+                    self.$options.components.message = messageComponent;
+                    self.messages = [
+                        {text: Math.random()},
+                        {text: Math.random()}
+                    ];
+                });
+            }
+        }
+    });
+
+    //FUNCIONES PRIVADAS DE LA VISTA
+    function _modal(callback) {
+        //CARGA DINÁMICA DE VISTA
+        require(["vue!src/modules/modal.html"], function (Component) {
+            var modal = new Component();
+            var div = $("<div>").appendTo("body")[0];
+            var vm = new Vue(modal).$mount(div);
+
+            callback(vm);
+        });
+    }
+
+</script>

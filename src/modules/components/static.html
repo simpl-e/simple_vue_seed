@@ -1,0 +1,30 @@
+
+<style>
+    .component_static {
+        border: 1px solid darkgrey;
+        padding: 5px 10px;
+        color: grey;
+    }
+</style>
+
+<template>
+    <div class="component_static">
+
+        {{description}}
+
+    </div>
+</template>
+
+<script>
+
+    define(function () {
+        //COMO CLASE
+        return function () {
+            return {
+                template: template,
+                props: ["description"]
+            };
+        };
+    });
+
+</script>

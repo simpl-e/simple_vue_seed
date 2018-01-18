@@ -1,0 +1,10 @@
+
+#SOLO PERMITIR ACCESO A ARCHIVOS *.HTML EN EL ROOT
+
+order allow,deny
+<FilesMatch "^$">
+    allow from all
+</FilesMatch>
+<FilesMatch "\.(html)$">
+    allow from all
+</FilesMatch>

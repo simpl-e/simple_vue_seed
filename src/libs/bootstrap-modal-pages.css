@@ -1,0 +1,25 @@
+
+.modalPage{
+    max-width: 100vw;
+}
+
+.modalPage .modal-dialog{
+    margin: 0;
+    max-width: 460px;
+    width: 100%;
+}
+
+.modalPage .modal-content{
+    border-radius: 0;
+}
+
+.modalPage .modal-body {
+    height: calc(100vh - 55px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+}
+
+.modalPage .modal-body  > div{
+    padding-bottom: 10px; /*some margin bottom*/    
+}
