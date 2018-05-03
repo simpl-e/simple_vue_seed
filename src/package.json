@@ -1,0 +1,7 @@
+{
+  "name": "simple_vue_seed",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "requirejs": "^2.3.5"
+  }
+}
